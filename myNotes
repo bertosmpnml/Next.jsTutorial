@@ -1,0 +1,124 @@
+2 - CSS STYLING 
+
+tailwind css, use className to predifine styles for each component.
+
+    'antialiased' -cllas will smooths out the font. nice touch.
+
+clsx, library to toogle class names
+
+Suppose that you want to create an InvoiceStatus component which accepts status. The status can be 'pending' or 'paid'.
+If it's 'paid', you want the color to be green. If it's 'pending', you want the color to be gray.
+
+
+Benefits of using css : 
+
+Provide a way to make CSS classes locally scoped to components by default, reducing risk of styling conflicts.
+
+
+We can also style next.js app with 
+
+        Sass which allows me to import .css and .scss files.
+        css-in-JS libraries such as styled-jsx, styled components and emotion.
+
+
+
+3 - OPTIMIZING FONTS AND IMAGES.
+
+We add custom fonts using next/font.
+ next will downloads font files at build
+ we use /app/ui/fonts.ts to keep fonts used throughout my app.
+    /app/ui/fonts.ts
+        import {Inter } from 'next/font/google';
+
+        export conts inter = Inter({ subsets: ['latin'], weight: ['400', '700'] }); we can check google font to learn more on the font weights. 
+ 
+ to apply the fonts to a component like on /app/layout.tsx <body> component : 
+        import { Inter } from '@/app/ui/fonts'
+
+        <body className= {`{inter.className} antialiased`}> { children } </body>
+
+
+we add images with next/image.
+    nextjs can serve static assets like image, under the top-level /public folder. Files inse /public can be referenced in my app.
+
+    with regular html, we add img using <img src= "" alt="">
+    --and we have to ensure responsivity.
+    --specify img size for different devices.
+    --Prevent layout shift as the images load.
+    Instead I use next/image component to automatically optimize my images.
+
+
+    the <Image> component.
+        its an extension of the <img> tag, comes with automatic image optimization ,such as : 
+            --Prevent layout shift automatically when img re loading.
+            --Resizing images to avoid shipping large images to devices with sm vp
+            -- Lazy loading images by default. img load as they enter the viewport.
+            --serving imgs in modernformats like webp and avif if supported.
+    we can use 2 imgs (different), conditionally show depending on user's device, Desktop or mobile.
+
+    in my /app/page.tsx, 
+    
+    import Image from 'next/image';
+    <Image src="/her-desktop.png" 
+            width={1000}
+            height={760}
+            className="hidden md:block"
+            alt="Screenshts of the ...... desktop version".
+     />
+    it is a good practice to set the width height of img to avoid layout shift. should be an aspect ratio identical to the source image.
+    --"hidden" className to remove the image from the DOM on mobile screens;
+    --"md:block" className to show the img on the desktop screens.
+    we know how fonts and images are optimized in next.js
+    to dive deeper on opt remote img, using local font files : 
+        img opt docs https://nextjs.org/docs/app/building-your-application/optimizing/images 
+        font opt docs https://nextjs.org/docs/app/building-your-application/optimizing/fonts
+        improve web perf with imgs mdn https://developer.mozilla.org/en-US/docs/Learn/Performance/Multimedia
+        how core web vitals affect SEO https://vercel.com/blog/how-core-web-vitals-affect-seo
+
+        4 CREATING LAYOUTS AND PAGES.
+
+Create routes using file-system routing.
+    nextjs uses file-system routing, folders for nested routes, each folder represents route segment that maps ot a URL segment.
+
+    eg : / dashboard / invoices ====in the file system, 
+    (/)          app
+    (dashbord)   |_dashboard
+    (invoices)      |_invoices.
+
+    I can seperate UIs for each route using layout.tsx and page.tsx files.
+    page.tsx : special nextjs file that exports a React component, required for the route to be accessible.
+    here /app/page.tsx is the home page associated with the rout /.
+    to create ta nested route, I can nest folders inside each other and add page.tsx files inside them : 
+        app
+        |_page.tsx --> /
+        |_dashboard
+          |_page.tsx --> /dashboard
+
+    To create  a new route segment:
+     -- create a new folder with the route name.
+     -- create a "page.tsx" file in that folder.
+        we can nest routes.
+    Dashboards have some sort of navigation that is shared across multiple pages.
+        -- use "layout.tsx" file to create UI shared between multiple pages.
+        that is partial rendering
+        ROOT LAYOUT 
+        /app/layout.tsx is required which will be shared across all pages in the app. 
+            we can use it to modify <html> and <body> tags to add meta data or anything else possible.
+         
+role of folders and files when creating new rout segments
+
+Create a nested layout that can be shared between multiple dashboard pages.
+
+colocation, partial rendering , root layout.
+
+5 NAVIGATING BETWEEN PAGES
+    how ot show an active link with usePathname() hook.
+    How navigation works.
+    the <Link> component.
+        to be use to link between pages in my app. allows to do client-side navigation with js learn more here : https://nextjs.org/docs/app/building-your-application/routing/linking-and-navigating#how-routing-and-navigation-works.
+        using <Link> is similar to <a>
+    a common UI pattern is to show an active link, currently on. To do this, must get user's current path from the URL. nextjs provides a hook called usePathname() can be use to check the path and implement this pattern (must be use in a client component .)
+    
+
+6 SETTING UP DATABASE.
+
